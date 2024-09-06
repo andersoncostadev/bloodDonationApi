@@ -1,5 +1,4 @@
 ﻿using Application.Commands.v1.Donation.Create;
-using Application.Commands.v1.Donation.Update;
 using Application.Commands.v1.Donor.Create;
 using Application.Commands.v1.Donor.Delete;
 using Application.Commands.v1.Donor.Update;
@@ -67,7 +66,6 @@ namespace Infrastructure.Extensions
             services.AddScoped<IValidator<GetPostalCodeQuery>, GetPostalCodeValidator>();
 
             services.AddScoped<IValidator<CreateDonationCommand>, CreateDonationValidator>();
-            services.AddScoped<IValidator<UpdateDonationCommand>, UpdateDonationValidator>();
 
             return services;
         }

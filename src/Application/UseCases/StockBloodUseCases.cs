@@ -21,6 +21,18 @@ namespace Application.UseCases
             _mapper = mapper;
         }
 
+        public async Task<StockBloodDto> AdjustStockQuantityAsync(StockBloodDto entity)
+        {
+            var existingStock = await _stockBloodRepository.GetByBloodTypeAndRhFactorAsync(entity.BloodType!, entity.RhFactor!) 
+                ?? throw new ApplicationException($"No stock found for BloodType {entity.BloodType!} and RhFactor {entity.RhFactor!}");
+
+            existingStock.QuantityML = entity.QuantityML;
+
+            var updatedStock = await _stockBloodRepository.UpdateAsync(existingStock);
+
+            return _mapper.Map<StockBloodDto>(updatedStock);
+        }
+
         public async Task<IList<StockBloodDto>> GetBloodStockReportAsync(int pageNumber, int pageSize)
         {
             var bloodStockReport = await _stockBloodRepository.GetBloodStockReportAsync(pageNumber, pageSize);
@@ -28,14 +40,14 @@ namespace Application.UseCases
             return bloodStockReport?.Select(stockBlood => _mapper.Map<StockBloodDto>(stockBlood)).ToList() ?? [];
         }
 
-        public async Task<StockBloodDto?> GetByBloodTypeAndRhFactorAsync(string bloodType, string rhFactor)
+        public async Task<StockBloodDto> GetByBloodTypeAndRhFactorAsync(string bloodType, string rhFactor)
         {
             var stockBlood = await _stockBloodRepository.GetByBloodTypeAndRhFactorAsync(bloodType, rhFactor);
 
-            return stockBlood == null ? null : _mapper.Map<StockBloodDto>(stockBlood);
+            return stockBlood == null ? null : _mapper.Map<StockBloodDto>(stockBlood!);
         }
 
-        public async Task<StockBloodDto> UpdateStockBloodAsync(StockBloodDto stockBlood, bool isUpdate = false, int quantityDifference = 0)
+        public async Task<StockBloodDto> UpdateStockBloodAsync(StockBloodDto stockBlood)
         {
             var existingStock = await _stockBloodRepository.GetByBloodTypeAndRhFactorAsync(stockBlood.BloodType!, stockBlood.RhFactor!);
 
@@ -59,8 +71,7 @@ namespace Application.UseCases
             {
                 bool wasAboveMinimum = existingStock.QuantityML > minimumStock;
 
-                var updateStock = await _stockBloodRepository.UpdateStockBloodAsync(
-                    existingStock, isUpdate: isUpdate, quantityDifference: quantityDifference);
+                var updateStock = await _stockBloodRepository.UpdateStockBloodAsync(existingStock);
 
                 if (wasAboveMinimum && updateStock.QuantityML <= minimumStock)
                 {

@@ -1,4 +1,5 @@
-﻿using Application.Queries.StockBlood.GetStockBloodReport;
+﻿using Application.Commands.v1.StockBlood;
+using Application.Queries.StockBlood.GetStockBloodReport;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +28,23 @@ namespace Api.Controllers.v1
                 return NotFound();
 
             return Ok(response);
+        }
+
+        [HttpPut()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStockBloodAsync([FromQuery] string bloodType, [FromQuery] string rhFactor, [FromBody] UpdateStockBloodCommand command)
+        {
+            command.BloodType = bloodType;
+            command.RhFactor = rhFactor;
+
+            var result = await _mediator.Send(command);
+
+            if (result == null)
+                return BadRequest("Failed to update stock blood");
+
+            return Ok(result);
         }
     }
 }

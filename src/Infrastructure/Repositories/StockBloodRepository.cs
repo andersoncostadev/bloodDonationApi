@@ -80,12 +80,12 @@ namespace Infrastructure.Repositories
 
         public async Task<StockBloodEntity> UpdateAsync(StockBloodEntity entity)
         {
-            var stockBlood = _context.StockBloods!.FirstOrDefault(d => d.Id == entity.Id);
+            var stockBlood = _context.StockBloods!.FirstOrDefault(s => s.BloodType == entity.BloodType && s.RhFactor == entity.RhFactor) 
+                ?? throw new ApplicationException("Stock not found");
 
-            if (stockBlood == null)
-                return null;
+            stockBlood.QuantityML = entity.QuantityML;
 
-            _context.Entry(stockBlood).CurrentValues.SetValues(entity);
+            _context.Entry(stockBlood).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
