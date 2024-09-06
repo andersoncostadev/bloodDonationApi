@@ -66,14 +66,20 @@ namespace Api.Controllers.v1
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateDonorAsync([FromQuery] Guid id, [FromBody] UpdateDonorCommand command)
+        public async Task<IActionResult> UpdateDonorAsync([FromQuery] Guid donorId, [FromQuery] Guid id, [FromBody] UpdateDonorCommand command)
         {
-            command.Id = id;
+            command.Id = donorId;
+            command.Address!.Id = id;
+
             var result = await _mediator.Send(command);
+
+            if (result == null)
+                return BadRequest("Failed to update donor");
+
             return Ok(result);
         }
 

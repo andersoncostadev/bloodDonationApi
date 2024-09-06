@@ -28,7 +28,14 @@ namespace Application.UseCases
             return bloodStockReport?.Select(stockBlood => _mapper.Map<StockBloodDto>(stockBlood)).ToList() ?? [];
         }
 
-        public async Task<StockBloodDto> UpdateStockBloodAsync(StockBloodDto stockBlood)
+        public async Task<StockBloodDto?> GetByBloodTypeAndRhFactorAsync(string bloodType, string rhFactor)
+        {
+            var stockBlood = await _stockBloodRepository.GetByBloodTypeAndRhFactorAsync(bloodType, rhFactor);
+
+            return stockBlood == null ? null : _mapper.Map<StockBloodDto>(stockBlood);
+        }
+
+        public async Task<StockBloodDto> UpdateStockBloodAsync(StockBloodDto stockBlood, bool isUpdate = false, int quantityDifference = 0)
         {
             var existingStock = await _stockBloodRepository.GetByBloodTypeAndRhFactorAsync(stockBlood.BloodType!, stockBlood.RhFactor!);
 
@@ -52,7 +59,8 @@ namespace Application.UseCases
             {
                 bool wasAboveMinimum = existingStock.QuantityML > minimumStock;
 
-                var updateStock = await _stockBloodRepository.UpdateStockBloodAsync(existingStock);
+                var updateStock = await _stockBloodRepository.UpdateStockBloodAsync(
+                    existingStock, isUpdate: isUpdate, quantityDifference: quantityDifference);
 
                 if (wasAboveMinimum && updateStock.QuantityML <= minimumStock)
                 {

@@ -9,6 +9,7 @@ namespace Infrastructure.DataBaseContext
         {
         }
 
+
         public DbSet<DonationEntity>? Donations { get; set; }
         public DbSet<DonorEntity>? Donors { get; set; }
         public DbSet<AddressEntity>? Addresses { get; set; }
@@ -18,7 +19,9 @@ namespace Infrastructure.DataBaseContext
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseInMemoryDatabase("BloodDonationDb");
+                optionsBuilder.UseSqlServer("Server=localhost;Database=BloodDonationDb;User Id=sa;Password=Password123;");
+
+            optionsBuilder.EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

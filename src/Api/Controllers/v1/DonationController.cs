@@ -1,5 +1,4 @@
 ﻿using Application.Commands.v1.Donation.Create;
-using Application.Commands.v1.Donation.Update;
 using Application.Queries.Donation.GetAll;
 using Application.Queries.Donation.GetDonationsReport;
 using MediatR;
@@ -34,22 +33,6 @@ namespace Api.Controllers.v1
             return Ok(result);
         }
 
-        [HttpPut()]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateDonationAsync([FromQuery] Guid donorId, [FromQuery] Guid id, [FromBody] UpdateDonationCommand command)
-        {
-            command.DonorId = donorId;
-            command.Id = id;
-
-            var result = await _mediator.Send(command);
-
-            if (result == null)
-                return BadRequest("Failed to update donation");
-
-            return Ok(result);
-        }
 
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -26,6 +26,17 @@ namespace Application.Commands.v1.Donor.Create
             if (await _donorUseCases.EmailExistsAsync(request.Email!))
                 throw new ApplicationException("Email already exists");
 
+            var donor = new DonorDto
+            {
+                FullName = request.FullName,
+                Email = request.Email,
+                BirthDate = request.BirthDate,
+                Gender = request.Gender,
+                Weight = request.Weight,
+                BloodType = request.BloodType,
+                RhFactor = request.RhFactor,
+            };
+
             var address = new AddressDto
             {
                 Street = request.Address!.Street,
@@ -36,17 +47,7 @@ namespace Application.Commands.v1.Donor.Create
                 ZipCode = request.Address.ZipCode
             };
 
-            var donor = new DonorDto
-            {
-                FullName = request.FullName,
-                Email = request.Email,
-                BirthDate = request.BirthDate,
-                Gender = request.Gender,
-                Weight = request.Weight,
-                BloodType = request.BloodType,
-                RhFactor = request.RhFactor,
-                Address = address
-            };
+            donor.Address = address;
 
             var createdDonor = await _donorUseCases.CreateDonorAsync(donor);
 

@@ -31,6 +31,8 @@ namespace Application.UseCases
 
             var donorEntity = _mapper.Map<DonorEntity>(donor);
 
+            var createdDonor = await _donorRepository.AddAsync(donorEntity);
+
             var addressEntity = new AddressEntity
             {
                 Street = donor.Address.Street,
@@ -39,14 +41,12 @@ namespace Application.UseCases
                 ZipCode = getAddressByPostal.ZipCode,
                 Number = donor.Address.Number,
                 Neighborhood = donor.Address.Neighborhood,
-                DonorId = donorEntity.Id
+                DonorId = createdDonor.Id
             };
 
             var createdAddress = await _addressRepository.AddAsync(addressEntity);
 
-            donorEntity.Address = createdAddress;
-
-            var createdDonor = await _donorRepository.AddAsync(donorEntity);
+            createdDonor.Address = createdAddress;
 
             return _mapper.Map<DonorDto>(createdDonor);
         }

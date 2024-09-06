@@ -16,10 +16,31 @@ namespace Infrastructure.Repositories
 
         public async Task<AddressEntity> AddAsync(AddressEntity entity)
         {
-           _context.Addresses!.Add(entity);
+            var existingAddress = await _context.Addresses!
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.DonorId == entity.DonorId);
+
+            if (existingAddress != null)
+            {
+                var trackedEntity = _context.ChangeTracker
+                    .Entries<AddressEntity>()
+                    .FirstOrDefault(e => e.Entity.DonorId == entity.DonorId);
+
+                if (trackedEntity != null)
+                {
+                    _context.Entry(trackedEntity.Entity).CurrentValues.SetValues(entity);
+                }
+                else
+                {
+                    _context.Entry(entity).State = EntityState.Modified;
+                }
+            }
+            else
+            {
+                _context.Addresses!.Add(entity);
+            }
 
             await _context.SaveChangesAsync();
-
             return entity;
         }
 

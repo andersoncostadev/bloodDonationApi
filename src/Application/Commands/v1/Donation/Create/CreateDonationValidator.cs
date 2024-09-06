@@ -45,16 +45,17 @@ namespace Application.Commands.v1.Donation.Create
 
             var lastDonation = donor.Donations?.OrderByDescending(x => x.DonationDate).FirstOrDefault();
 
-            if (lastDonation != null)
-            {
-                var daysSinceLastDonation = (command.DonationDate!.Value.Date - lastDonation.DonationDate!.Value.Date).TotalDays;
+            if (lastDonation == null)
+                return true;
+     
+            var daysSinceLastDonation = (command.DonationDate!.Value.Date - lastDonation.DonationDate!.Value.Date).TotalDays;
 
-                if (donor.Gender == DonorGender.FEMALE)
-                    return daysSinceLastDonation >= 90;
+            if (donor.Gender == DonorGender.FEMALE)
+                return daysSinceLastDonation >= 90;
 
-                if (donor.Gender == DonorGender.MALE)
-                    return daysSinceLastDonation >= 60;
-            }
+            if (donor.Gender == DonorGender.MALE)
+                return daysSinceLastDonation >= 60;
+  
             return true;
         }
     }
