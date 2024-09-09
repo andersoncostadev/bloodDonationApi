@@ -17,12 +17,12 @@ namespace Infrastructure.Services
         public async Task SendEmailAsync(string to, string subject, string body)
         {
             using var client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("", "");
+            client.Credentials = new NetworkCredential("andersonmtb88@gmail.com", "bcxc bzsn cyka ffvy");
             client.EnableSsl = true;
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(""),
+                From = new MailAddress("andersonmtb88@gmail.com"),
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true,
