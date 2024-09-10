@@ -17,7 +17,7 @@ namespace Application.Queries.Address.GetPostalCode
 
         public async Task<GetPostalCodeQueryResponse> Handle(GetPostalCodeQuery request, CancellationToken cancellationToken)
         {
-           var validationResult = validator.Validate(request);
+           var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);

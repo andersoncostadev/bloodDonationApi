@@ -21,19 +21,26 @@ namespace Infrastructure.Services
                 return null;
 
             var content = await response.Content.ReadAsStringAsync();
-            var address = JsonConvert.DeserializeObject<ViaCepResponse>(content);
 
-            if(address == null || string.IsNullOrEmpty(address.Cep))
-                return null;
-
-            return new AddressEntity
+            try
             {
-                Street = address.Logradouro,
-                Neighborhood = address.Bairro,
-                City = address.Localidade,
-                State = address.Uf,
-                ZipCode = address.Cep
-            };
+                var address = JsonConvert.DeserializeObject<ViaCepResponse>(content);
+
+                if (address == null || string.IsNullOrEmpty(address.Cep))
+                    return null;
+
+                return new AddressEntity
+                {
+                    Street = address.Logradouro,
+                    Neighborhood = address.Bairro,
+                    City = address.Localidade,
+                    State = address.Uf,
+                    ZipCode = address.Cep
+                };
+            } catch(JsonReaderException)
+            {
+                return null;
+            }
         }
     }
 }
